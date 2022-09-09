@@ -1,10 +1,26 @@
 #!/bin/bash
 set -eu
 
+# Usage: start-workers.sh [-n PROCS] [MODE=local|compute]
+# PROCS defaults to 2 (1 process is reserved for Swift/T)
+# MODE defaults to "compute"
+
+PROCS=2
+while getopts "n:" OPT
+do
+  case $OPT in
+    n) PROCS=$OPTARG ;;
+    ?) # Bash prints an error
+       exit 1        ;;
+  esac
+done
+shift $(( OPTIND - 1 ))
+
 case ${#} in
   0) MODE="compute" ;;
   1) MODE=$1        ;;
-  *) exit 1         ;;  # Bash prints an error
+  *) echo "start-workers: bad argument count: ${#}"
+     exit 1         ;;
 esac
 
 THIS=$( realpath $( dirname $0 ) )
@@ -15,11 +31,6 @@ then
   exit 1
 fi
 
-# Python with persistqueue:
-PY=/projects/Swift-T/public/sfw/login/Miniconda_2022-07-28
-
-PATH=$SWIFT/stc/bin:$PATH
-PATH=$PY/stc/bin:$PATH
-
 which swift-t
-swift-t -p ${MACHINE[@]} $THIS/workers.swift
+set -x
+swift-t -p ${MACHINE[@]} -n $PROCS $THIS/workers.swift

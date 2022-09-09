@@ -12,7 +12,6 @@ QUEUE = os.getenv("HOME") + "/QUEUE"
 
 Q = NXFileQueue(QUEUE)
 
-print("Q: " + str(Q))
 try:
   TASK = Q.get(block=False, timeout=1)
   print("py: TASK: " + str(TASK))
@@ -29,8 +28,7 @@ printf("using python: %s", s);
 (void v) loop()
 {
   for (boolean b = true, int i = 1;
-       b;
-       b=c, i = i + 1)
+       b; b=c, i = i + 1)
   {
     boolean c;
     task = python_persist(code, "TASK");
@@ -41,11 +39,23 @@ printf("using python: %s", s);
     else
     {
       printf("swift: TASK=%s", task) =>
-      c = true;
+        c = true;
+      do_task(task);
     }
   }
 }
 
-trace("START") =>
+(string s) do_task(string msg)
+{
+  s = python_persist(
+"""
+import do_work
+s = do_work.do_work("%s")
+""" % msg,
+"repr(s)"
+);
+}
+
+trace("WORKFLOW START") =>
   loop() =>
-  trace("STOP");
+  trace("WORKFLOW STOP");

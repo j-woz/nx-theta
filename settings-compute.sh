@@ -6,3 +6,5 @@ export QUEUE=debug-cache-quad
 export WALLTIME=00:02:00
 
 MACHINE=( -m theta )
+
+source $THIS/settings.sh
