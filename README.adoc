@@ -1,1 +1,72 @@
 = nx-theta
+
+== Quick start
+
+On Theta:
+----
+$ nice ./start-workers.sh local
+# OR
+$ ./start-workers.sh compute
+----
+
+Then, in a separate shell, issue commands to the queue via a
+NeXPy workflow or the `task_local.py` command provided here.
+
+== File index
+
+=== Testing and debugging
+
+`check_queue.py`::
+Simple command to check the current length of the queue for testing
+
+`task_local.py`::
+Simple command to insert a task into the queue for testing
+
+`worker_local.py`::
+Simple command to consume a task from the queue for testing
+
+=== Workflow components
+
+`do_work.py`::
+Python module to execute work.  Can be easily extended.
+
+`start-workers.sh`::
+The main command to start the workers via `workers.swift`
+
+`workers.swift`::
+The main workflow loop.
+Consumes tasks from the queue and passes them to `do_work.py`
+
+=== Settings
+
+`settings-compute.sh`::
+Settings for Theta compute nodes
+(Swift/T location, `PROJECT`, `QUEUE`, `WALLTIME`, etc.).
+Note that this `QUEUE` is the system scheduler queue name,
+not the Python queue file
+
+`settings-local.sh`::
+Settings for Theta login nodes (Swift/T location, etc.)
+
+`settings.sh`::
+Settings for Theta in general (`PYTHONPATH`, etc.)
+
+== Configuration
+
+The queue is in file:
+----
+os.getenv("HOME") + "/NX-Q/nxserver/task_list"
+----
+
+== Control
+
+. The user starts inserting tasks via a NeXPy workflow
+. The user starts the workflow via `start-workers.sh`
+. This launches `workflow.swift` in the given configuration
+. The Python snippet in `workflow.swift` pops the task strings
+. `workflow.swift` passes the popped strings to the `do_work` module
+. `do_work` issues a `subprocess.call()` to execute the work
+. `workflow.swift` continues popping tasks until the queue is empty
+. Tasks can be inserted while the workflow is running, but if the
+  queue becomes empty, the workflow will exit after 1 second.
+  (This behavior can be changed.)
