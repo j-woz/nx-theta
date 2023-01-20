@@ -3,24 +3,29 @@ import io;
 import python;
 import sys;
 
-string code = """
+// # QUEUE = os.getenv("HOME") + "/QUEUE"
+
 import os, sys
 from persistqueue.exceptions import Empty
 from nxrefine.nxserver import NXFileQueue
 
-QUEUE = os.getenv("HOME") + "/QUEUE"
 
+string code = """
+QUEUE = os.getenv("HOME") + "/NX-Q/nxserver/task_list"
 Q = NXFileQueue(QUEUE)
-
 try:
   TASK = Q.get(block=False, timeout=1)
-  print("py: TASK: " + str(TASK))
-  sys.stdout.flush()
 except Empty:
   TASK = "PERSISTQUEUE.EMPTY"
-  print("py: Q is EMPTY")
-  sys.stdout.flush()
 """;
+
+  // print("py: TASK: " + str(TASK))
+  // sys.stdout.flush()
+
+
+  // print("py: Q is EMPTY")
+  // sys.stdout.flush()
+
 
 s, c = system1("which python");
 printf("using python: %s", s);
