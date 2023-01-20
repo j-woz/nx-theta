@@ -33,4 +33,4 @@ fi
 
 which swift-t
 set -x
-swift-t -p ${MACHINE[@]} -n $PROCS $THIS/workers.swift
+swift-t -p ${MACHINE[@]} -n $PROCS -e PYTHONPATH $THIS/workers.swift
